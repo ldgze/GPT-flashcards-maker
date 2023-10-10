@@ -1,0 +1,24 @@
+{
+  "name": "gpt-flashcards-maker",
+  "version": "1.0.0",
+  "description": "A web application designed to simplify the creation of flashcards using the OpenAI GPT API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ldgze/GPT-flashcards-maker.git"
+  },
+  "author": "Dongze Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ldgze/GPT-flashcards-maker/issues"
+  },
+  "homepage": "https://github.com/ldgze/GPT-flashcards-maker#readme",
+  "devDependencies": {
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.3"
+  }
+}
