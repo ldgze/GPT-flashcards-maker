@@ -2,9 +2,11 @@
   "name": "gpt-flashcards-maker",
   "version": "1.0.0",
   "description": "A web application designed to simplify the creation of flashcards using the OpenAI GPT API.",
-  "main": "index.js",
+  "main": "app.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./node_modules/nodemon/bin/nodemon.js app.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,17 @@
   "devDependencies": {
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
+    "nodemon": "^3.0.1",
     "prettier": "^3.0.3"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mongodb": "^6.1.0",
+    "path": "^0.12.7",
+    "url": "^0.11.3"
   }
 }
