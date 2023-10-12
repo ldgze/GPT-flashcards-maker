@@ -13,7 +13,7 @@ function MyAuth() {
     console.log("username:", username);
     const user = await myDB.getUser(username);
     console.log("user:", user);
-    const storedHashedPassword = await myDB.getUser(username).password;
+    const storedHashedPassword = await user.password;
     console.log("storedHashedPassword:", storedHashedPassword);
     if (!storedHashedPassword) {
       return false;
