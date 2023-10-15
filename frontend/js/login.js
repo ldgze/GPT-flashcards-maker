@@ -3,26 +3,14 @@ function Login() {
 
   const formLogin = document.querySelector("form#login");
 
-  login.showMessage = function (message) {
-    const messagesDiv = document.querySelector("#messages");
-
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = `<div class="alert alert-success alert-dismissible" role="alert">
-             <div>${message}</div>
-             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>`;
-
-    messagesDiv.append(wrapper);
-  };
-
-  login.showErrorMessage = function (message, type = "danger") {
+  login.showMessage = function (message, type = "danger") {
     const messagesDiv = document.querySelector("#messages");
 
     const wrapper = document.createElement("div");
     wrapper.innerHTML = `<div class="alert alert-${type} alert-dismissible" role="alert">
-             <div>${message}</div>
-             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>`;
+           <div>${message}</div>
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
 
     messagesDiv.append(wrapper);
   };
@@ -46,7 +34,7 @@ function Login() {
       // Login was successful
       window.location.replace("dashboard.html");
     } else {
-      login.showErrorMessage("Login failed", "danger");
+      login.showMessage("Login failed", "danger");
     }
   }
 
@@ -58,7 +46,9 @@ function Login() {
 const login = Login();
 login.showMessage(
   "Please enter your credentials. If you don't have an account, please register first.",
+  "info",
 );
 login.showMessage(
   "The default username is 'user' and the default password is 'password'",
+  "info",
 );

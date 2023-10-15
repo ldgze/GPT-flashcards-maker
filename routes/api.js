@@ -153,6 +153,30 @@ router.delete("/cards/delete", async (req, res) => {
   }
 });
 
+router.post("/cards/update", async (req, res) => {
+  console.log("req.body:", req.body);
+  console.log("req.session.user:", req.session.user);
+  console.log("updating cards");
+
+  if (req.session.user) {
+    const { _id, question, answer } = req.body;
+    const card = { _id, question, answer };
+
+    try {
+      console.log("card:", card);
+      await myDB.updateCardByID(card);
+
+      res.send("Card updated successfully");
+    } catch (error) {
+      console.error("Error updating card:", error);
+
+      res.status(500).send("An error occurred while updating the card");
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
+
 // Default export
 
 export default router;

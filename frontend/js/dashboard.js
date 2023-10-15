@@ -34,11 +34,12 @@ function Dashboard() {
     cardElement.innerHTML = `
     <div class="card-body">
       <h5 class="card-title">Question</h5>
-      <p class="card-text">${card.question}</p>
-      <h5 class="card-title">Answer</h5>
-      <p class="card-text">${card.answer}</p>
+      <p class="card-text" id="cardQuestion">${card.question}</p>
+      <h5 class="card-title" >Answer</h5>
+      <p class="card-text" id="cardAnswer">${card.answer}</p>
       <div class="btn-group">
         <button id="editBtn" class="btn btn-primary" ">Edit</button>
+        <button id="saveBtn" class="btn btn-success">Save</button>
         <button id="deleteBtn" class="btn btn-danger" ">Delete</button>
       </div>
     </div>
@@ -46,11 +47,65 @@ function Dashboard() {
 
     cardElement
       .querySelector("#editBtn")
-      .addEventListener("click", onEditCard(card));
+      .addEventListener("click", () => onEditCard(cardElement));
 
     cardElement
       .querySelector("#deleteBtn")
       .addEventListener("click", onDeleteCard(card));
+
+    cardElement.querySelector("#saveBtn").style.display = "none";
+
+    function onEditCard(cardElement) {
+      console.log("editing card", card);
+      const cardQuestionElement = cardElement.querySelector("#cardQuestion");
+      const cardQuestionText = cardQuestionElement.innerText;
+
+      const cardAnswerElement = cardElement.querySelector("#cardAnswer");
+      const cardAnswerText = cardAnswerElement.innerText;
+
+      const questionInput = document.createElement("input");
+      questionInput.value = cardQuestionText;
+
+      const answerInput = document.createElement("input");
+      answerInput.value = cardAnswerText;
+
+      questionInput.classList.add("form-control");
+      answerInput.classList.add("form-control");
+
+      cardQuestionElement.replaceWith(questionInput);
+      cardAnswerElement.replaceWith(answerInput);
+
+      const editBtn = cardElement.querySelector("#editBtn");
+      editBtn.style.display = "none";
+
+      const saveBtn = cardElement.querySelector("#saveBtn");
+      saveBtn.style.display = "block";
+
+      saveBtn.addEventListener("click", async function () {
+        const newCardQuestionText = questionInput.value;
+        const newCardAnswerText = answerInput.value;
+
+        const res = await fetch("/api/cards/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            _id: card._id,
+            question: newCardQuestionText,
+            answer: newCardAnswerText,
+          }),
+        });
+
+        if (res.ok) {
+          me.showMessage("Card updated", "success");
+          me.reloadCards();
+        } else {
+          me.showMessage("Error updating card", "danger");
+          return;
+        }
+      });
+    }
 
     return cardElement;
   };

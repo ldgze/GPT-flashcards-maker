@@ -79,16 +79,26 @@ function MyDB() {
 
   myDB.updateCardByID = async (card) => {
     const { client, db } = connect();
-
     const cardsCollection = db.collection("cards");
+    console.log("hello card:", card);
+    const filter = {
+      _id: new ObjectId(card._id),
+    };
+    const update = { $set: { question: card.question, answer: card.answer } };
 
     try {
-      const result = await cardsCollection.findOneAndUpdate(
-        { _id: card.id },
-        { $set: card },
-        { returnOriginal: false },
-      );
-      return result.value;
+      const result = await cardsCollection.updateOne(filter, update);
+
+      if (result.modifiedCount > 0) {
+        console.log("Document updated successfully");
+      } else if (result.matchedCount === 0) {
+        throw new Error("Document not found");
+      } else {
+        throw new Error("Document found but not updated");
+      }
+    } catch (err) {
+      console.error("Error updating card:", err);
+      throw err; // Re-throw the error to be caught by the caller
     } finally {
       console.log("db closing connection");
       client.close();
