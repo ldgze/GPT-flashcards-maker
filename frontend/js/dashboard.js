@@ -28,27 +28,58 @@ function Dashboard() {
   };
 
   const renderCard = function (card) {
-    return `
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">Question</h5>
-        <p class="card-text">${card.question}</p>
-        <h5 class="card-title">Answer</h5>
-        <p class="card-text">${card.answer}</p>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="editCard(${card.id})">Edit</button>
-          
-          <button class="btn btn-danger" onclick="deleteCard(${card.id})">Delete</button>
-        </div>
+    const cardElement = document.createElement("div");
+    cardElement.classList.add("card", "mb-3");
+
+    cardElement.innerHTML = `
+    <div class="card-body">
+      <h5 class="card-title">Question</h5>
+      <p class="card-text">${card.question}</p>
+      <h5 class="card-title">Answer</h5>
+      <p class="card-text">${card.answer}</p>
+      <div class="btn-group">
+        <button id="editBtn" class="btn btn-primary" ">Edit</button>
+        <button id="deleteBtn" class="btn btn-danger" ">Delete</button>
       </div>
     </div>
   `;
+
+    cardElement
+      .querySelector("#editBtn")
+      .addEventListener("click", onEditCard(card));
+
+    cardElement
+      .querySelector("#deleteBtn")
+      .addEventListener("click", onDeleteCard(card));
+
+    return cardElement;
   };
+
+  function onDeleteCard(card) {
+    return async function () {
+      const res = await fetch("/api/cards/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ _id: card._id }),
+      });
+
+      if (res.ok) {
+        me.showMessage("Card deleted", "warning");
+        me.reloadCards();
+      } else {
+        me.showMessage("Error deleting card", "danger");
+        return;
+      }
+    };
+  }
 
   me.renderCards = function (cards) {
     const cardsDiv = document.querySelector("#cards");
 
-    cardsDiv.innerHTML = cards.map(renderCard).join("\n");
+    cardsDiv.innerHTML = "";
+    for (let card of cards) cardsDiv.append(renderCard(card));
   };
 
   const formCreateCard = document.querySelector("form#create");

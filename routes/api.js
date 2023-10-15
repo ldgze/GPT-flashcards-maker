@@ -132,6 +132,27 @@ router.post("/cards/create", async (req, res) => {
   }
 });
 
+router.delete("/cards/delete", async (req, res) => {
+  console.log("req.body:", req.body);
+  console.log("req.session.user:", req.session.user);
+
+  if (req.session.user) {
+    const { _id } = req.body;
+
+    try {
+      await myDB.deleteCardByID(_id);
+
+      res.send("Card deleted successfully");
+    } catch (error) {
+      console.error("Error deleting card:", error);
+
+      res.status(500).send("An error occurred while deleting the card");
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
+
 // Default export
 
 export default router;

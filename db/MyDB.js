@@ -56,7 +56,7 @@ function MyDB() {
     };
 
     try {
-      await cardsCollection.remove(queryObj);
+      await cardsCollection.deleteOne(queryObj);
     } finally {
       console.log("db closing connection");
       client.close();
