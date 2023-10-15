@@ -1,32 +1,101 @@
-import { MongoClient } from "mongodb";
+import "dotenv/config"; // to load .env file
+import { MongoClient, ObjectId } from "mongodb";
 
 function MyDB() {
   const uri = "mongodb://localhost:27017" || process.env.MONGODB_URI;
   const myDB = {};
 
-  const prompts = [1, 2, 3, 4];
-
   const connect = () => {
+    console.log("Connecting to", uri.slice(0, 20));
     const client = new MongoClient(uri);
     const db = client.db("flashcardsMaker");
 
     return { client, db };
   };
 
-  myDB.getUser = async (username) => {
+  myDB.getCardsByUsername = async (username) => {
     const { client, db } = connect();
-
-    const usersCollection = db.collection("users");
+    const cardsCollection = db.collection("cards");
 
     try {
-      return await usersCollection.findOne({ username });
+      const queryObj = {
+        "user.username": username,
+      };
+      return await cardsCollection.find(queryObj).toArray();
     } finally {
       console.log("db closing connection");
       client.close();
     }
   };
 
-  myDB.createUser = async (username, hashedPassword) => {
+  myDB.insertCard = async (card, username) => {
+    const { client, db } = connect();
+    const cardsCollection = db.collection("cards");
+    const user = await myDB.getUserByUsername(username);
+    const createdate = new Date();
+    console.log("card:", card);
+
+    try {
+      await cardsCollection.insertOne({
+        question: card.question,
+        answer: card.answer,
+        createdate: createdate,
+        user: user,
+      });
+    } finally {
+      console.log("db closing connection");
+      client.close();
+    }
+  };
+
+  myDB.deleteCardByID = async (card_id) => {
+    const { client, db } = connect();
+    const cardsCollection = db.collection("cards");
+    const queryObj = {
+      _id: new ObjectId(card_id),
+    };
+
+    try {
+      await cardsCollection.remove(queryObj);
+    } finally {
+      console.log("db closing connection");
+      client.close();
+    }
+  };
+
+  myDB.getCardByID = async (card_id) => {
+    const { client, db } = connect();
+    const cardsCollection = db.collection("cards");
+    const queryObj = {
+      _id: new ObjectId(card_id),
+    };
+    try {
+      return await cardsCollection.findOne(queryObj);
+    } finally {
+      console.log("db closing connection");
+      client.close();
+    }
+  };
+
+  myDB.updateCardByID = async (card) => {
+    const { client, db } = connect();
+
+    const cardsCollection = db.collection("cards");
+
+    try {
+      const result = await cardsCollection.findOneAndUpdate(
+        { _id: card.id },
+        { $set: card },
+        { returnOriginal: false },
+      );
+      return result.value;
+    } finally {
+      console.log("db closing connection");
+      client.close();
+    }
+  };
+
+  myDB.insertUser = async (username, hashedPassword) => {
     const { client, db } = connect();
     const usersCollection = db.collection("users");
 
@@ -41,62 +110,28 @@ function MyDB() {
     }
   };
 
-  myDB.getUserCollection = () => {
+  myDB.getUserByUsername = async (username) => {
     const { client, db } = connect();
+
     const usersCollection = db.collection("users");
 
     try {
-      return usersCollection;
+      return await usersCollection.findOne({ username });
     } finally {
       console.log("db closing connection");
       client.close();
     }
   };
 
-  myDB.getPrompts = async () => {
-    try {
-      return prompts;
-    } finally {
-      console.log("db closing connection");
-    }
-  };
-
-  myDB.getCards = async ({ query = {}, MaxElements } = {}) => {
+  myDB.updateUser = async (user) => {
     const { client, db } = connect();
 
-    const cardsCollection = db.collection("cards");
+    const usersCollection = db.collection("users");
 
     try {
-      return await cardsCollection.find(query).limit(MaxElements).toArray();
-    } finally {
-      console.log("db closing connection");
-      client.close();
-    }
-  };
-
-  myDB.createCard = async (card) => {
-    const { client, db } = connect();
-
-    const cardsCollection = db.collection("cards");
-
-    try {
-      const result = await cardsCollection.insertOne(card);
-      return result.ops[0];
-    } finally {
-      console.log("db closing connection");
-      client.close();
-    }
-  };
-
-  myDB.updateCard = async (id, card) => {
-    const { client, db } = connect();
-
-    const cardsCollection = db.collection("cards");
-
-    try {
-      const result = await cardsCollection.findOneAndUpdate(
-        { _id: id },
-        { $set: card },
+      const result = await usersCollection.findOneAndUpdate(
+        { _id: user._id },
+        { $set: user },
         { returnOriginal: false },
       );
       return result.value;
@@ -106,14 +141,12 @@ function MyDB() {
     }
   };
 
-  myDB.deleteCard = async (id) => {
+  myDB.getUserCollection = () => {
     const { client, db } = connect();
-
-    const cardsCollection = db.collection("cards");
+    const usersCollection = db.collection("users");
 
     try {
-      const result = await cardsCollection.findOneAndDelete({ _id: id });
-      return result.value;
+      return usersCollection;
     } finally {
       console.log("db closing connection");
       client.close();

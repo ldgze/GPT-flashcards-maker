@@ -11,7 +11,7 @@ function MyAuth() {
 
   myAuth.authenticateUser = async (username, password) => {
     console.log("username:", username);
-    const user = await myDB.getUser(username);
+    const user = await myDB.getUserByUsername(username);
     console.log("user:", user);
     const storedHashedPassword = await user.password;
     console.log("storedHashedPassword:", storedHashedPassword);

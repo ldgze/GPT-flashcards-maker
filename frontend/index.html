@@ -16,17 +16,15 @@
     <div class="container">
       <h1 class="text-center my-5">GTP Flashcards Maker</h1>
 
+      <div id="messages"></div>
+
       <div class="row justify-content-center">
         <div class="col-md-6">
           <div class="card">
             <div class="card-body">
               <h2 class="card-title text-center mb-4">Log in</h2>
 
-              <form
-                action="/api/login"
-                method="post"
-                enctype="application/x-www-form-urlencoded"
-              >
+              <form id="login" action="#">
                 <div class="form-group">
                   <label for="username">Username:</label>
                   <input
@@ -65,5 +63,7 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+
+    <script src="./js/login.js"></script>
   </body>
 </html>
