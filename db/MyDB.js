@@ -158,30 +158,37 @@ function MyDB() {
   myDB.deleteUserByUsername = async (username) => {
     const { client, db } = connect();
     const usersCollection = db.collection("users");
+    const cardsCollection = db.collection("cards");
     const queryObj = {
       username: username,
     };
     console.log("queryObj:", queryObj);
     try {
       await usersCollection.deleteOne(queryObj);
+      await cardsCollection.deleteMany({ "user.username": username });
     } finally {
       console.log("db closing connection");
       client.close();
     }
   };
 
-  myDB.updateUser = async (user) => {
+  myDB.updateUserByUsername = async (username, newUsername, password) => {
     const { client, db } = connect();
 
     const usersCollection = db.collection("users");
+    const cardsCollection = db.collection("cards");
+    const user = { username: newUsername, password: password };
 
     try {
-      const result = await usersCollection.findOneAndUpdate(
-        { _id: user._id },
+      await usersCollection.findOneAndUpdate(
+        { username: username },
         { $set: user },
         { returnOriginal: false },
       );
-      return result.value;
+      await cardsCollection.updateMany(
+        { "user.username": username },
+        { $set: { user: user } },
+      );
     } finally {
       console.log("db closing connection");
       client.close();

@@ -45,6 +45,41 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/user/update", async (req, res) => {
+  if (req.session.user) {
+    const username = req.session.user;
+    const newUsername = req.body.username;
+
+    if (username === newUsername) {
+      return res.status(400).send("Please choose a different username.");
+    }
+    const existingUser = await myDB.getUserByUsername(newUsername);
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .send("Username already exists. Please choose a different one.");
+    } else {
+      const { password } = req.body;
+
+      const hashedPassword = await myAuth.hashPassword(password);
+
+      try {
+        await myDB.updateUserByUsername(username, newUsername, hashedPassword);
+
+        return res.status(200).send("User updated successfully");
+      } catch (error) {
+        console.error("Error updating user:", error);
+        return res
+          .status(500)
+          .send("An error occurred while updating the user");
+      }
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
+
 router.delete("/user/delete", async (req, res) => {
   if (req.session.user) {
     console.log("delete user...........");

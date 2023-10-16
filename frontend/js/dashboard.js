@@ -225,31 +225,6 @@ function Dashboard() {
     }
   }
 
-  const newToOldBtn = document.querySelector("#new-to-old");
-
-  newToOldBtn.addEventListener("click", onNewToOld);
-  async function onNewToOld(evt) {
-    // Avoids re rendering
-    evt.preventDefault();
-
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!new to old");
-    const res = await fetch("/api/cards");
-    if (res.status !== 200) {
-      me.showMessage("Error loading cards");
-      return;
-    }
-    const cards = await res.json();
-
-    console.log("got cards", cards);
-    if (res.ok) {
-      cards.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
-      console.log("sorted cards", cards);
-      me.renderCards(cards);
-    } else {
-      me.showMessage("Error exporting cards", "danger");
-    }
-  }
-
   const logoutBtn = document.querySelector("#logout");
   logoutBtn.addEventListener("click", onLogout);
   async function onLogout(evt) {
@@ -280,34 +255,6 @@ function Dashboard() {
       window.location.href = "/";
     } else {
       me.showMessage("Error deleting account", "danger");
-    }
-  }
-
-  const updateBtn = document.querySelector("#update-account");
-  updateBtn.addEventListener("click", onUpdateAccount);
-  async function onUpdateAccount(evt) {
-    // Avoids re rendering
-    evt.preventDefault();
-
-    const formData = new FormData(
-      document.querySelector("form#update-account"),
-    );
-    console.log("onUpdateAccount", evt, "formData", formData);
-
-    const res = await fetch("/api/update-account", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(Object.fromEntries(formData.entries())),
-    });
-
-    if (res.ok) {
-      me.showMessage("Account updated", "success");
-      formGenerateCard.reset();
-      me.reloadCards();
-    } else {
-      me.showMessage("Error updating account", "danger");
     }
   }
 
