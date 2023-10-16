@@ -197,8 +197,6 @@ router.post("/cards/generate", async (req, res) => {
       const generatedFlashcards = await myGenerate.generate({ text, res });
       console.log("generatedFlashcards:", generatedFlashcards);
 
-      console.log("generatedFlashcards:", generatedFlashcards);
-
       await myDB.insertCard(generatedFlashcards, req.session.user);
 
       res.status(200).send("Flashcards generated and stored successfully.");
@@ -210,6 +208,11 @@ router.post("/cards/generate", async (req, res) => {
   } else {
     res.redirect("/login");
   }
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
 });
 
 // Default export

@@ -225,6 +225,45 @@ function Dashboard() {
     }
   }
 
+  const newToOldBtn = document.querySelector("#new-to-old");
+
+  newToOldBtn.addEventListener("click", onNewToOld);
+  async function onNewToOld(evt) {
+    // Avoids re rendering
+    evt.preventDefault();
+
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!new to old");
+    const res = await fetch("/api/cards");
+    if (res.status !== 200) {
+      me.showMessage("Error loading cards");
+      return;
+    }
+    const cards = await res.json();
+
+    console.log("got cards", cards);
+    if (res.ok) {
+      cards.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+      console.log("sorted cards", cards);
+      me.renderCards(cards);
+    } else {
+      me.showMessage("Error exporting cards", "danger");
+    }
+  }
+
+  const logoutBtn = document.querySelector("#logout");
+  logoutBtn.addEventListener("click", onLogout);
+  async function onLogout(evt) {
+    // Avoids re rendering
+    evt.preventDefault();
+
+    const res = await fetch("/api/logout");
+    if (res.ok) {
+      window.location.href = "/";
+    } else {
+      me.showMessage("Error logging out", "danger");
+    }
+  }
+
   return me;
 }
 
