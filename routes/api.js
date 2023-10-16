@@ -188,6 +188,19 @@ router.post("/cards/update", async (req, res) => {
     const card = { _id, question, answer };
 
     try {
+      const existingCard = await myDB.getCardByID(_id);
+
+      if (
+        existingCard.question === question &&
+        existingCard.answer === answer
+      ) {
+        return res
+          .status(400)
+          .send(
+            "Card unchanged. Please choose a different question or answer.",
+          );
+      }
+
       await myDB.updateCardByID(card);
 
       res.send("Card updated successfully");

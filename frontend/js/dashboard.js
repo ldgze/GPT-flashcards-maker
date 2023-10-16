@@ -101,7 +101,8 @@ function Dashboard() {
           me.showMessage("Card updated", "success");
           me.reloadCards();
         } else {
-          me.showMessage("Error updating card", "danger");
+          const error = await res.text();
+          me.showMessage(error, "danger");
           return;
         }
       });

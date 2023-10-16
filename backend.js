@@ -1,6 +1,5 @@
 import express from "express";
 import session from "express-session";
-import cookieParser from "cookie-parser";
 
 import apiRouter from "./routes/api.js";
 
@@ -10,8 +9,6 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // For URL-encoded data
-
-app.use(cookieParser());
 
 app.use(
   session({
