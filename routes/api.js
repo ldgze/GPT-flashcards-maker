@@ -11,15 +11,20 @@ router.get("/login", (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  const existingUser = await myDB.getUserByUsername(username);
 
-  const isAuthenticated = await myAuth.authenticateUser(username, password);
-
-  if (isAuthenticated) {
-    req.session.user = username;
-    req.session.save();
-    res.status(200).send("User logged in successfully");
+  if (!existingUser) {
+    res.status(400).send("Invalid username. Please register first.");
   } else {
-    res.status(400).send("Invalid username or password. Please try again.");
+    const isAuthenticated = await myAuth.authenticateUser(username, password);
+
+    if (isAuthenticated) {
+      req.session.user = username;
+      req.session.save();
+      res.status(200).send("User logged in successfully");
+    } else {
+      res.status(400).send("Invalid password. Please try again.");
+    }
   }
 });
 
@@ -37,6 +42,23 @@ router.post("/register", async (req, res) => {
   } else {
     await myDB.insertUser(username, hashedPassword);
     res.status(200).send("User created successfully");
+  }
+});
+
+router.delete("/user/delete", async (req, res) => {
+  if (req.session.user) {
+    console.log("delete user...........");
+    const username = req.session.user;
+    try {
+      await myDB.deleteUserByUsername(username);
+
+      res.send("User deleted successfully");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).send("An error occurred while deleting the user");
+    }
+  } else {
+    res.redirect("/login");
   }
 });
 
@@ -81,7 +103,7 @@ router.post("/cards/create", async (req, res) => {
 
 router.delete("/cards/delete", async (req, res) => {
   if (req.session.user) {
-    const { _id } = req.body;
+    const _id = req.body;
 
     try {
       await myDB.deleteCardByID(_id);

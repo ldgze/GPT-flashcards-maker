@@ -70,10 +70,11 @@ function MyDB() {
   };
 
   myDB.deleteCardByID = async (card_id) => {
+    console.log("deleteCardByID card_id:", card_id);
     const { client, db } = connect();
     const cardsCollection = db.collection("cards");
     const queryObj = {
-      _id: new ObjectId(card_id),
+      _id: new ObjectId(card_id._id),
     };
 
     try {
@@ -148,6 +149,21 @@ function MyDB() {
 
     try {
       return await usersCollection.findOne({ username });
+    } finally {
+      console.log("db closing connection");
+      client.close();
+    }
+  };
+
+  myDB.deleteUserByUsername = async (username) => {
+    const { client, db } = connect();
+    const usersCollection = db.collection("users");
+    const queryObj = {
+      username: username,
+    };
+    console.log("queryObj:", queryObj);
+    try {
+      await usersCollection.deleteOne(queryObj);
     } finally {
       console.log("db closing connection");
       client.close();

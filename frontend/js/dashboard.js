@@ -264,6 +264,25 @@ function Dashboard() {
     }
   }
 
+  const deleteAccountBtn = document.querySelector("#delete-account");
+  deleteAccountBtn.addEventListener("click", onDeleteAccount);
+  async function onDeleteAccount(evt) {
+    // Avoids re rendering
+    evt.preventDefault();
+
+    const res = await fetch("/api/user/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (res.ok) {
+      window.location.href = "/";
+    } else {
+      me.showMessage("Error deleting account", "danger");
+    }
+  }
+
   const updateBtn = document.querySelector("#update-account");
   updateBtn.addEventListener("click", onUpdateAccount);
   async function onUpdateAccount(evt) {

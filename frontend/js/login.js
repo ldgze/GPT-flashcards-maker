@@ -34,7 +34,8 @@ function Login() {
       // Login was successful
       window.location.replace("dashboard.html");
     } else {
-      login.showMessage("Login failed", "danger");
+      const error = await res.text();
+      login.showMessage(error, "danger");
     }
   }
 

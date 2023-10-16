@@ -13,6 +13,9 @@ function MyAuth() {
     console.log("username:", username);
     const user = await myDB.getUserByUsername(username);
     console.log("user:", user);
+    if (!user) {
+      return false;
+    }
     const storedHashedPassword = await user.password;
     console.log("storedHashedPassword:", storedHashedPassword);
     if (!storedHashedPassword) {
