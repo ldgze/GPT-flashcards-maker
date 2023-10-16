@@ -1,5 +1,4 @@
 import express from "express";
-import path from "path";
 import { myAuth } from "../frontend/js/auth.js";
 import { myDB } from "../db/MyDB.js";
 import { myGenerate } from "../frontend/js/generate.js";
@@ -7,90 +6,41 @@ import { myGenerate } from "../frontend/js/generate.js";
 const router = express.Router();
 
 router.get("/login", (req, res) => {
-  res.redirect("/"); // Redirect to the login page if the user is not logged in
+  res.redirect("/");
 });
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  console.log("req.body:", req.body); // Log the request body
-
-  console.log("req.session:", req.session);
-
-  // Check if the username and password match in your authentication logic
-
   const isAuthenticated = await myAuth.authenticateUser(username, password);
 
   if (isAuthenticated) {
-    console.log("User is authenticated");
-    // Save the username in the session
     req.session.user = username;
     req.session.save();
     res.status(200).send("User logged in successfully");
   } else {
-    console.log("User is not authenticated");
-    // Display the login form again with an error message
     res.status(400).send("Invalid username or password. Please try again.");
   }
-});
-
-// Rigister route
-
-router.get("/register", (req, res) => {
-  const __dirname = path.resolve();
-
-  res.sendFile(path.join(__dirname, "/frontend/registration.html"));
 });
 
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
   const hashedPassword = await myAuth.hashPassword(password);
-
-  // Check if the username already exists in the database
 
   const existingUser = await myDB.getUserByUsername(username);
 
   if (existingUser) {
     res
-
       .status(400)
-
       .send("Username already exists. Please choose a different one.");
   } else {
-    // Insert the new user into the database
     await myDB.insertUser(username, hashedPassword);
-    console.log("req.session:", req.session);
-    res.send("User registered successfully. <a href='/'>Go back to login</a>");
-  }
-});
-
-// Registration route
-
-router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-
-  const hashedPassword = await myAuth.hashPassword(password);
-
-  // Check if the username already exists in the database
-  const existingUser = await myDB.getUser(username);
-
-  if (existingUser) {
-    res
-      .status(400)
-      .send("Username already exists. Please choose a different one.");
-  } else {
-    // Insert the new user into the database
-    await myDB.createUser(username, hashedPassword);
-    res.send("User registered successfully. <a href='/'>Go back to login</a>");
+    res.status(200).send("User created successfully");
   }
 });
 
 router.get("/cards", async (req, res) => {
-  console.log("req.session:", req.session);
-  console.log("hello~~~~~~~~~~~~~~~~~~~~~~~~~~`");
-  console.log("req.session.user:", req.session.user);
-
   if (req.session.user) {
     const username = req.session.user;
 
@@ -109,15 +59,11 @@ router.get("/cards", async (req, res) => {
 });
 
 router.post("/cards/create", async (req, res) => {
-  console.log("req.body:", req.body);
-  console.log("req.session.user:", req.session.user);
-
   if (req.session.user) {
     const username = req.session.user;
 
     const { question, answer } = req.body;
     const card = { question, answer };
-    console.log("card", card);
 
     try {
       await myDB.insertCard(card, username);
@@ -134,9 +80,6 @@ router.post("/cards/create", async (req, res) => {
 });
 
 router.delete("/cards/delete", async (req, res) => {
-  console.log("req.body:", req.body);
-  console.log("req.session.user:", req.session.user);
-
   if (req.session.user) {
     const { _id } = req.body;
 
@@ -155,16 +98,11 @@ router.delete("/cards/delete", async (req, res) => {
 });
 
 router.post("/cards/update", async (req, res) => {
-  console.log("req.body:", req.body);
-  console.log("req.session.user:", req.session.user);
-  console.log("updating cards");
-
   if (req.session.user) {
     const { _id, question, answer } = req.body;
     const card = { _id, question, answer };
 
     try {
-      console.log("card:", card);
       await myDB.updateCardByID(card);
 
       res.send("Card updated successfully");
@@ -179,12 +117,9 @@ router.post("/cards/update", async (req, res) => {
 });
 
 router.post("/cards/generate", async (req, res) => {
-  console.log("req.body:", req.body);
-  console.log("req.session.user:", req.session.user);
-
   if (req.session.user) {
     const text = req.body;
-    console.log("text:", text);
+
     if (!text) {
       res
         .status(400)
@@ -193,9 +128,7 @@ router.post("/cards/generate", async (req, res) => {
     }
 
     try {
-      // Call the generate function to get the generated flashcards
       const generatedFlashcards = await myGenerate.generate({ text, res });
-      console.log("generatedFlashcards:", generatedFlashcards);
 
       await myDB.insertCard(generatedFlashcards, req.session.user);
 
@@ -214,7 +147,5 @@ router.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
 });
-
-// Default export
 
 export default router;

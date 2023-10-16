@@ -264,6 +264,34 @@ function Dashboard() {
     }
   }
 
+  const updateBtn = document.querySelector("#update-account");
+  updateBtn.addEventListener("click", onUpdateAccount);
+  async function onUpdateAccount(evt) {
+    // Avoids re rendering
+    evt.preventDefault();
+
+    const formData = new FormData(
+      document.querySelector("form#update-account"),
+    );
+    console.log("onUpdateAccount", evt, "formData", formData);
+
+    const res = await fetch("/api/update-account", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    });
+
+    if (res.ok) {
+      me.showMessage("Account updated", "success");
+      formGenerateCard.reset();
+      me.reloadCards();
+    } else {
+      me.showMessage("Error updating account", "danger");
+    }
+  }
+
   return me;
 }
 
