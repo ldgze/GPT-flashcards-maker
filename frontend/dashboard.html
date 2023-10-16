@@ -51,18 +51,20 @@
           </form>
 
           <h2>Generate Cards</h2>
-          <div class="form-group">
-            <label for="generate-text">Enter Text:</label>
-            <textarea
-              id="generate-text"
-              rows="4"
-              class="form-control"
-              placeholder="Enter text here..."
-            ></textarea>
-          </div>
-          <button id="generate-cards" class="btn btn-success">
-            Generate Flashcards
-          </button>
+          <form id="generate" action="#">
+            <div class="form-group">
+              <label for="generate-text">Enter Text:</label>
+              <textarea
+                name="text"
+                rows="4"
+                class="form-control"
+                placeholder="Enter text here..."
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">
+              Generate Flashcards
+            </button>
+          </form>
 
           <h2>Functions</h2>
           <div class="btn-group">

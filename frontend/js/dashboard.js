@@ -160,11 +160,70 @@ function Dashboard() {
       formCreateCard.reset();
       me.reloadCards();
     } else {
-      me.showMessage("Error creating prompt", "danger");
+      me.showMessage("Error creating card", "danger");
     }
   }
 
   formCreateCard.addEventListener("submit", onCreateCard);
+
+  const formGenerateCard = document.querySelector("form#generate");
+  console.log("formCreateCard", formGenerateCard);
+  formGenerateCard.addEventListener("submit", onGenerateCards);
+
+  async function onGenerateCards(evt) {
+    // Avoids re rendering
+    evt.preventDefault();
+
+    const formData = new FormData(formGenerateCard);
+    console.log("onGenerateCards", evt, "formData", formData);
+
+    const res = await fetch("/api/cards/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    });
+
+    if (res.ok) {
+      me.showMessage("Cards generated", "success");
+      formGenerateCard.reset();
+      me.reloadCards();
+    } else {
+      me.showMessage("Error generating cards", "danger");
+    }
+  }
+
+  const exportBtn = document.querySelector("#export-cards");
+  exportBtn.addEventListener("click", onExportCards);
+  async function onExportCards(evt) {
+    // Avoids re rendering
+    evt.preventDefault();
+
+    const res = await fetch("/api/cards");
+    if (res.status !== 200) {
+      me.showMessage("Error loading cards");
+      return;
+    }
+    const cards = await res.json();
+
+    console.log("got cards", cards);
+    if (res.ok) {
+      const sanitizedCards = cards.map(({ question, answer }) => ({
+        question,
+        answer,
+      }));
+      const jsonData = JSON.stringify(sanitizedCards, null, 2); // The second argument formats the JSON for readability (2 spaces for indentation).
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "flashcards.json";
+      a.click();
+    } else {
+      me.showMessage("Error exporting cards", "danger");
+    }
+  }
 
   return me;
 }

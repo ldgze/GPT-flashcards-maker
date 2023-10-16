@@ -48,6 +48,27 @@ function MyDB() {
     }
   };
 
+  myDB.insertManyCards = async (cards, username) => {
+    const { client, db } = connect();
+    const cardsCollection = db.collection("cards");
+    const user = await myDB.getUserByUsername(username);
+    const createdate = new Date();
+    console.log("cards:", cards);
+    try {
+      await cardsCollection.insertMany(
+        cards.map((card) => ({
+          question: card.question,
+          answer: card.answer,
+          createdate: createdate,
+          user: user,
+        })),
+      );
+    } finally {
+      console.log("db closing connection");
+      client.close();
+    }
+  };
+
   myDB.deleteCardByID = async (card_id) => {
     const { client, db } = connect();
     const cardsCollection = db.collection("cards");

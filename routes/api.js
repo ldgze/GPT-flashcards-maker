@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { myAuth } from "../frontend/js/auth.js";
 import { myDB } from "../db/MyDB.js";
+import { myGenerate } from "../frontend/js/generate.js";
 
 const router = express.Router();
 
@@ -171,6 +172,40 @@ router.post("/cards/update", async (req, res) => {
       console.error("Error updating card:", error);
 
       res.status(500).send("An error occurred while updating the card");
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
+
+router.post("/cards/generate", async (req, res) => {
+  console.log("req.body:", req.body);
+  console.log("req.session.user:", req.session.user);
+
+  if (req.session.user) {
+    const text = req.body;
+    console.log("text:", text);
+    if (!text) {
+      res
+        .status(400)
+        .send("Please provide valid text for flashcard generation.");
+      return;
+    }
+
+    try {
+      // Call the generate function to get the generated flashcards
+      const generatedFlashcards = await myGenerate.generate({ text, res });
+      console.log("generatedFlashcards:", generatedFlashcards);
+
+      console.log("generatedFlashcards:", generatedFlashcards);
+
+      await myDB.insertCard(generatedFlashcards, req.session.user);
+
+      res.status(200).send("Flashcards generated and stored successfully.");
+    } catch (error) {
+      console.error("Error generating card:", error);
+
+      res.status(500).send("An error occurred while generating the card");
     }
   } else {
     res.redirect("/login");
