@@ -46,4 +46,4 @@ function Profile() {
 }
 
 const profile = Profile();
-profile.showMessage("Please rigister with your username and password.", "info");
+profile.showMessage("Please update your username and password.", "info");

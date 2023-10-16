@@ -49,4 +49,7 @@ function Registration() {
 }
 
 const registration = Registration();
-registration.showMessage("Please update your username and password.", "info");
+registration.showMessage(
+  "Please rigister with your username and password.",
+  "info",
+);
