@@ -10,20 +10,33 @@ function MyAuth() {
   };
 
   myAuth.authenticateUser = async (username, password) => {
-    console.log("username:", username);
     const user = await myDB.getUserByUsername(username);
-    console.log("user:", user);
+
     if (!user) {
       return false;
     }
     const storedHashedPassword = await user.password;
-    console.log("storedHashedPassword:", storedHashedPassword);
+
     if (!storedHashedPassword) {
       return false;
     }
 
     // Compare the entered password with the stored hashed password
     return bcrypt.compare(password, storedHashedPassword);
+  };
+
+  myAuth.comparePassword = async (username, newHashedPassword) => {
+    const user = await myDB.getUserByUsername(username);
+    if (!user) {
+      return false;
+    }
+    const storedHashedPassword = await user.password;
+    if (!storedHashedPassword) {
+      return false;
+    }
+    // Compare the entered password with the stored hashed password
+    console.log("");
+    return bcrypt.compare(storedHashedPassword, newHashedPassword);
   };
 
   return myAuth;

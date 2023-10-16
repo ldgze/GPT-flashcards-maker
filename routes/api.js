@@ -49,10 +49,38 @@ router.post("/user/update", async (req, res) => {
   if (req.session.user) {
     const username = req.session.user;
     const newUsername = req.body.username;
+    const newPassword = req.body.password;
 
     if (username === newUsername) {
-      return res.status(400).send("Please choose a different username.");
+      const newHashedPassword = await myAuth.hashPassword(newPassword);
+      console.log("newPassword", newPassword);
+      console.log("newHashedPassword", newHashedPassword);
+      const isAuthenticated = await myAuth.authenticateUser(
+        username,
+        newHashedPassword,
+      );
+      if (isAuthenticated) {
+        return res
+          .status(400)
+          .send("Password unchanged. Please choose a different password.");
+      }
+
+      try {
+        await myDB.updateUserByUsername(
+          username,
+          newUsername,
+          newHashedPassword,
+        );
+
+        return res.status(200).send("User updated successfully");
+      } catch (error) {
+        console.error("Error updating user:", error);
+        return res
+          .status(500)
+          .send("An error occurred while updating the user");
+      }
     }
+
     const existingUser = await myDB.getUserByUsername(newUsername);
 
     if (existingUser) {
