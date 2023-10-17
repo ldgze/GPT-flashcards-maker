@@ -3,8 +3,6 @@
 Welcome to GPT FlashCards Maker, a web application designed to simplify the creation of flashcards using the OpenAI GPT API. This project is built using Express and MongoDB, allowing you to create and manage flashcards with ease.
 ![Screenshot](./frontend/thumbnail/dashboard.png)
 
-![Demo](https://gpt-flashcards-maker.onrender.com/demo.png)
-
 ## Table of Contents
 
 - [GPT FlashCards Maker](#gpt-flashcards-maker)
@@ -19,7 +17,7 @@ Welcome to GPT FlashCards Maker, a web application designed to simplify the crea
 
 ## Introduction
 
-GPT FlashCards Maker is a powerful tool for creating flashcards. It leverages the OpenAI GPT API to make the flashcard creation process more efficient and user-friendly. Whether you're a student or a professional, this application will help you generate and organize flashcards for effective learning.
+GPT FlashCards Maker is a powerful tool for creating flashcards. It leverages the OpenAI GPT API to make the flashcard creation process more efficient and user-friendly. Whether you're a student or a professional, this application will help you generate and organize flashcards for effective learning. This is also the first project of [CS5610 Web Development course](https://johnguerra.co/classes/webDevelopment_fall_2023/) at Northeastern University.
 
 ## Features
 
